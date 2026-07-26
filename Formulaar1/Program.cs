@@ -91,7 +91,7 @@ namespace Formulaar1
             //Attempt to confiugure download client API's.
             try
             {
-                if (TorrentClient == "qBittorrent" && qBitUsername != null && qBitPassword != null)
+                if (TorrentClient == "qBittorrent" && !string.IsNullOrEmpty(BaseqBitPath) && qBitUsername != null && qBitPassword != null)
                 {
                     Console.WriteLine($"Detected qBittorrent Client, attempting to login");
                     _qBittorrentClient = new QBittorrentClient(new Uri(BaseqBitPath!));
@@ -146,6 +146,13 @@ namespace Formulaar1
                 }
                 else
                 {
+                    if (string.IsNullOrEmpty(BaseSonarPath) || string.IsNullOrEmpty(SonarApiKey))
+                    {
+                        context.Response.StatusCode = 503;
+                        await context.Response.WriteAsync("Sonarr is not configured. Please set BasePath and ApiKey in appsettings.json.");
+                        return;
+                    }
+
                     if (!_httpClient.DefaultRequestHeaders.Contains("X-Api-Key"))
                     {
                         _httpClient.DefaultRequestHeaders.Accept.Clear();
