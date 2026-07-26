@@ -33,27 +33,55 @@ namespace Formulaar1
         private static string? TorrentClient, BaseSonarPath, BaseqBitPath, SonarApiKey, qBitUsername, qBitPassword, bugsnagApiKey, Hardlinkpath;
 
         private static bool running = false;
-        private static bool bugsnagEnabled = true;
+        private static bool bugsnagEnabled = false;
         private static bool enableHardlinking = false;
+
+        internal static string? GetStringSetting(IConfiguration config, params string[] keys)
+        {
+            foreach (var key in keys)
+            {
+                var value = config[key];
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    return value;
+                }
+            }
+
+            return null;
+        }
+
+        internal static bool GetBoolSetting(IConfiguration config, bool defaultValue, params string[] keys)
+        {
+            foreach (var key in keys)
+            {
+                if (bool.TryParse(config[key], out var value))
+                {
+                    return value;
+                }
+            }
+
+            return defaultValue;
+        }
 
         public static void Main(string[] args)
         {
-            using IHost host = Host.CreateDefaultBuilder(args).Build();
+            WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+            builder.Configuration.AddEnvironmentVariables(prefix: "FORMULAAR1__");
 
-            IConfiguration config = host.Services.GetRequiredService<IConfiguration>();
+            IConfiguration config = builder.Configuration;
 
-            SonarApiKey = config.GetValue<string>("APICredentials:Sonarr:ApiKey");
-            BaseSonarPath = config.GetValue<string>("APICredentials:Sonarr:BasePath");
+            SonarApiKey = GetStringSetting(config, "Sonarr:ApiKey", "APICredentials:Sonarr:ApiKey");
+            BaseSonarPath = GetStringSetting(config, "Sonarr:BasePath", "APICredentials:Sonarr:BasePath");
             TorrentClient = config.GetValue<string>("TorrentClient");
-            qBitUsername = config.GetValue<string>("APICredentials:qBittorrentClient:Username");
-            qBitPassword = config.GetValue<string>("APICredentials:qBittorrentClient:Password");
-            BaseqBitPath = config.GetValue<string>("APICredentials:qBittorrentClient:BasePath");
-            bugsnagEnabled = config.GetValue<bool>("APICredentials:bugsnag:enabled");
-            bugsnagApiKey = config.GetValue<string>("APICredentials:bugsnag:apiKey");
+            qBitUsername = GetStringSetting(config, "qBittorrentClient:Username", "APICredentials:qBittorrentClient:Username");
+            qBitPassword = GetStringSetting(config, "qBittorrentClient:Password", "APICredentials:qBittorrentClient:Password");
+            BaseqBitPath = GetStringSetting(config, "qBittorrentClient:BasePath", "APICredentials:qBittorrentClient:BasePath");
+            bugsnagEnabled = GetBoolSetting(config, defaultValue: false, "bugsnag:enabled", "APICredentials:bugsnag:enabled");
+            bugsnagApiKey = GetStringSetting(config, "bugsnag:apiKey", "APICredentials:bugsnag:apiKey");
             Hardlinkpath = config.GetValue<string>("Hardlinkpath");
             enableHardlinking = config.GetValue<bool>("EnableHardlinking");
 
-            if (bugsnagEnabled)
+            if (bugsnagEnabled && !string.IsNullOrWhiteSpace(bugsnagApiKey))
             {
                 _bugsnag = new Bugsnag.Client(bugsnagApiKey);
             }
@@ -64,7 +92,7 @@ namespace Formulaar1
             }
 
             //Configuring Sonarr API
-            if (BaseSonarPath != null && SonarApiKey != null)
+            if (!string.IsNullOrWhiteSpace(BaseSonarPath) && !string.IsNullOrWhiteSpace(SonarApiKey))
             {
 
                 Configuration.Default.BasePath = BaseSonarPath;
@@ -91,7 +119,7 @@ namespace Formulaar1
             //Attempt to configure download client API's.
             try
             {
-                if (TorrentClient == "qBittorrent" && !string.IsNullOrEmpty(BaseqBitPath) && qBitUsername != null && qBitPassword != null)
+                if (TorrentClient == "qBittorrent" && !string.IsNullOrWhiteSpace(BaseqBitPath) && !string.IsNullOrWhiteSpace(qBitUsername) && !string.IsNullOrWhiteSpace(qBitPassword))
                 {
                     Console.WriteLine($"Detected qBittorrent Client, attempting to login");
                     _qBittorrentClient = new QBittorrentClient(new Uri(BaseqBitPath!));
@@ -131,7 +159,6 @@ namespace Formulaar1
                 Console.WriteLine("[Hardlinking] Disabled — Sonarr will handle file management.");
             }
 
-            WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
             WebApplication app = builder.Build();
 
             _ = app.Use(async (context, next) =>
