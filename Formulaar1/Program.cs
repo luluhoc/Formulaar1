@@ -33,7 +33,7 @@ namespace Formulaar1
         private static string? TorrentClient, BaseSonarPath, BaseqBitPath, SonarApiKey, qBitUsername, qBitPassword, bugsnagApiKey, Hardlinkpath;
 
         private static bool running = false;
-        private static bool bugsnagEnabled = true;
+        private static bool bugsnagEnabled = false;
         private static bool enableHardlinking = false;
 
         internal static string? GetStringSetting(IConfiguration config, params string[] keys)
