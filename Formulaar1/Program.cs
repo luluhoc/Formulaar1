@@ -76,7 +76,7 @@ namespace Formulaar1
             qBitUsername = GetStringSetting(config, "qBittorrentClient:Username", "APICredentials:qBittorrentClient:Username");
             qBitPassword = GetStringSetting(config, "qBittorrentClient:Password", "APICredentials:qBittorrentClient:Password");
             BaseqBitPath = GetStringSetting(config, "qBittorrentClient:BasePath", "APICredentials:qBittorrentClient:BasePath");
-            bugsnagEnabled = GetBoolSetting(config, defaultValue: true, "bugsnag:enabled", "APICredentials:bugsnag:enabled");
+            bugsnagEnabled = GetBoolSetting(config, defaultValue: false, "bugsnag:enabled", "APICredentials:bugsnag:enabled");
             bugsnagApiKey = GetStringSetting(config, "bugsnag:apiKey", "APICredentials:bugsnag:apiKey");
             Hardlinkpath = config.GetValue<string>("Hardlinkpath");
             enableHardlinking = config.GetValue<bool>("EnableHardlinking");
