@@ -86,17 +86,40 @@ B --> D[Sonarr]
 
 ### GHCR Container Image
 
-Container images are published to `ghcr.io/<owner>/formulaar1` from pushes to `master` and version tags.
+Container images are published to `ghcr.io/<owner>/formulaar1` from pushes to `master` and version tags. Replace `<owner>` with the GitHub username or organization that owns the repository you want to pull from.
 
 ```sh
 docker run --rm -p 5000:5000 \
-  -e FORMULAAR1__Sonarr__ApiKey=your-sonarr-api-key \
+  -e FORMULAAR1__Sonarr__ApiKey=replace-with-your-sonarr-api-key \
   -e FORMULAAR1__Sonarr__BasePath=http://host.docker.internal:8989 \
   -e FORMULAAR1__qBittorrentClient__BasePath=http://host.docker.internal:10169 \
   ghcr.io/<owner>/formulaar1:latest
 ```
 
 Set any remaining `FORMULAAR1__...` environment variables as needed for your setup.
+
+### Docker Compose
+
+```yaml
+services:
+  formulaar1:
+    image: ghcr.io/<owner>/formulaar1:latest
+    container_name: formulaar1
+    ports:
+      - "5000:5000"
+    environment:
+      FORMULAAR1__Sonarr__ApiKey: replace-with-your-sonarr-api-key
+      FORMULAAR1__Sonarr__BasePath: http://host.docker.internal:8989
+      FORMULAAR1__qBittorrentClient__BasePath: http://host.docker.internal:10169
+```
+
+Save the file as `compose.yaml` (or `docker-compose.yml`) and start it with:
+
+```sh
+docker compose up -d
+```
+
+Add any other `FORMULAAR1__...` environment variables your setup needs, such as hardlinking or qBittorrent credentials, and keep any real API keys or passwords out of version control.
 
 ## Supported Series
 
