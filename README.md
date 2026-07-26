@@ -86,7 +86,7 @@ B --> D[Sonarr]
 
 ### GHCR Container Image
 
-Container images are published to `ghcr.io/<owner>/formulaar1` from pushes to `master` and version tags. Replace `<owner>` with the GitHub username or organization that owns the repository you want to pull from.
+Container images are published to `ghcr.io/<owner>/formulaar1` from pushes to the repository default branch and version tags. Replace `<owner>` with the GitHub username or organization that owns the repository you want to pull from.
 
 ```sh
 docker run --rm -p 5000:5000 \
