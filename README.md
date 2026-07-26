@@ -84,6 +84,20 @@ B --> D[Sonarr]
 
 6. Set up an AutoBrr filter pointing to this new client. That's it!
 
+### GHCR Container Image
+
+Container images are published to `ghcr.io/<owner>/formulaar1` from pushes to `master` and version tags.
+
+```sh
+docker run --rm -p 5000:5000 \
+  -e FORMULAAR1__Sonarr__ApiKey=your-sonarr-api-key \
+  -e FORMULAAR1__Sonarr__BasePath=http://host.docker.internal:8989 \
+  -e FORMULAAR1__qBittorrentClient__BasePath=http://host.docker.internal:10169 \
+  ghcr.io/<owner>/formulaar1:latest
+```
+
+Set any remaining `FORMULAAR1__...` environment variables as needed for your setup.
+
 ## Supported Series
 
 | Series | TVDB ID |
