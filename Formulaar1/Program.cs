@@ -88,7 +88,7 @@ namespace Formulaar1
 
             }
 
-            //Attempt to confiugure download client API's.
+            //Attempt to configure download client API's.
             try
             {
                 if (TorrentClient == "qBittorrent" && !string.IsNullOrEmpty(BaseqBitPath) && qBitUsername != null && qBitPassword != null)
